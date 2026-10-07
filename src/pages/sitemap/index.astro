@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'HTML Sitemap: All Pages on RaceCalc';
+const description = 'Every page on RaceCalc in one crawlable list: calculators, guides and site pages.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Sitemap' },
+];
+
+const toolLinks = [
+  ['/fov-calculator/', 'FOV Calculator'],
+  ['/triple-screen-calculator/', 'Triple Screen Calculator'],
+  ['/ppd-calculator/', 'PPD Calculator'],
+  ['/fuel-calculator/', 'Fuel & Stint Calculator'],
+];
+
+const guideLinks = [
+  ['/guides/', 'Guides index'],
+  ['/guides/fov-explained/', 'FOV explained for sim racing'],
+  ['/guides/triple-screen-setup/', 'Triple screen setup guide'],
+];
+
+const siteLinks = [
+  ['/about/', 'About'],
+  ['/methodology/', 'Methodology & editorial policy'],
+  ['/contact/', 'Contact'],
+  ['/changelog/', 'Changelog'],
+  ['/privacy/', 'Privacy policy'],
+  ['/terms/', 'Terms of use'],
+  ['/tools/', 'All tools'],
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/sitemap/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>HTML sitemap</h1>
+    <p class="lead">Everything on RaceCalc, grouped for humans and crawlers alike.</p>
+
+    <section class="section">
+      <h2 id="tools">Calculators</h2>
+      <ul>
+        {toolLinks.map(([href, label]) => <li><a href={href}>{label}</a></li>)}
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="guides">Guides</h2>
+      <ul>
+        {guideLinks.map(([href, label]) => <li><a href={href}>{label}</a></li>)}
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="site-pages">Site</h2>
+      <ul>
+        {siteLinks.map(([href, label]) => <li><a href={href}>{label}</a></li>)}
+      </ul>
+    </section>
+  </div>
+</Base>

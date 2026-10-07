@@ -1,0 +1,55 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'Changelog: What Changed and When | RaceCalc';
+const description = 'Real, dated updates to RaceCalc tools and game notes. No cosmetic date bumps: every entry lists what actually changed.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Changelog' },
+];
+
+const entries = [
+  {
+    date: '2026-10-08',
+    title: 'Initial release',
+    items: [
+      'Launched 4 tools: FOV calculator, triple screen calculator, PPD calculator, fuel & stint calculator.',
+      'Published per-game FOV entry notes for iRacing, Assetto Corsa, ACC, Le Mans Ultimate, rFactor 2, Automobilista 2, F1 23-25 and GT7.',
+      'All maths client-side; no accounts, no uploads.',
+    ],
+  },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/changelog/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Changelog</h1>
+    <p class="lead">
+      What actually changed, when, and why. We only touch dates when there is a real update behind them.
+    </p>
+
+    {entries.map((e) => (
+      <section class="section">
+        <h2 id={e.date} style="margin-top:0">{e.date}: {e.title}</h2>
+        <ul>
+          {e.items.map((i) => <li>{i}</li>)}
+        </ul>
+      </section>
+    ))}
+
+    <section class="section">
+      <h2 id="planned">Planned</h2>
+      <ul>
+        <li>Wheelbase and pedal setup converters (rotation degrees, force curves).</li>
+        <li>Braking reference markers per track (data pending).</li>
+        <li>Tire pressure unit converters for ACC and iRacing workflows.</li>
+      </ul>
+      <p class="small muted">Plans are not promises; entries move to a dated release when they ship.</p>
+    </section>
+  </div>
+</Base>

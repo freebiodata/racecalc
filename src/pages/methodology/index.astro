@@ -1,0 +1,97 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'Methodology: Formulas Behind Every Calculator | RaceCalc';
+const description =
+  'Every formula used by RaceCalc tools with worked examples: FOV projection, triple screen geometry, bezel correction, PPD and fuel planning maths.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Methodology' },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/methodology/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Methodology &amp; editorial policy</h1>
+    <p class="lead">
+      The exact maths behind every RaceCalc calculator, written so you can verify or replicate any
+      number we show.
+    </p>
+    <p class="small muted">Last updated: 08 Oct 2026</p>
+
+    <section class="section">
+      <h2 id="formulas">Core formulas</h2>
+      <ul>
+        <li><strong>Horizontal FOV</strong> = <code>2 × atan( screen width ÷ (2 × eye distance) )</code></li>
+        <li><strong>Vertical FOV</strong> = <code>2 × atan( tan(hFOV ÷ 2) ÷ aspect )</code></li>
+        <li><strong>Screen width from diagonal</strong> = <code>diagonal × aspect ÷ √(aspect² + 1)</code></li>
+        <li><strong>Triple total FOV</strong> = <code>per-screen FOV + 2 × side screen angle</code></li>
+        <li><strong>Bezel-corrected FOV</strong> = <code>2 × atan( (3 × width + bezels) ÷ (2 × distance) )</code></li>
+        <li><strong>PPD</strong> = <code>horizontal pixels ÷ horizontal FOV</code></li>
+        <li><strong>Fuel per lap (with margin)</strong> = <code>practice consumption × (1 + margin%)</code></li>
+        <li><strong>Safe laps per tank</strong> = <code>floor( tank ÷ fueled consumption )</code></li>
+        <li><strong>Stints</strong> = <code>ceil( race laps ÷ safe laps per tank )</code></li>
+      </ul>
+      <p>
+        All tools implement exactly these equations; the test suite recomputes them against
+        hand-verified values (for example: a 27" 16:9 screen at 60 cm subtends a horizontal FOV of about
+        52.6°, verified in both the calculator and the tests).
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="sources">Sources &amp; conventions</h2>
+      <ul>
+        <li><strong>Projection maths:</strong> standard perspective camera projection (the same model used in real-time graphics; see any computer graphics text on gluPerspective-style transforms).</li>
+        <li><strong>Triple screen geometry:</strong> planar arc model as used by sim racing rig guides; the seam-free condition is side angle = per-screen FOV, which matches the arrangement recommended across the community.</li>
+        <li><strong>Per-game FOV notes:</strong> based on the games' own settings documentation and community verification; we re-check each note when sims change their interfaces and log updates in the <a href="/changelog/">changelog</a>.</li>
+        <li><strong>PPD reference bands:</strong> described as practical guidance, not measured thresholds.</li>
+      </ul>
+      <p class="small muted">
+        Where a game hides its FOV behind an undocumented slider (some console titles), we say so on the
+        tool page rather than inventing a mapping.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="limits">Known limits</h2>
+      <ul>
+        <li><strong>Curved screens</strong> subtend slightly less angle than the same width flat; treat the flat-screen number as an upper bound.</li>
+        <li><strong>Side screen angles</strong> in our total FOV use the simple planar model; extreme wraparound rigs (angle &gt; 70°) distort, as do the images themselves.</li>
+        <li><strong>Fuel planning</strong> assumes stable consumption; wet races, traffic and saving change it, which is what the margin is for.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="testing">Testing &amp; QA</h2>
+      <ol>
+        <li>Every formula has a hand-calculation test case that must pass before deploy.</li>
+        <li>Worked examples on pages are generated from the same functions the tools run.</li>
+        <li>Per-game notes change only with a changelog entry and a source.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2 id="ai">AI use disclosure</h2>
+      <p>
+        Pages are drafted with tooling assistance and reviewed before publishing; every formula and
+        claim is verified against the sources above. No invented statistics appear on this site, and
+        anything unverifiable is labelled or excluded.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="corrections">Corrections policy</h2>
+      <p>
+        Found an error? <a href="/contact/">Report it</a> with a source. Confirmed corrections ship
+        within a week, are listed in the <a href="/changelog/">changelog</a>, and credit is given where
+        the reporter wants it.
+      </p>
+    </section>
+  </div>
+</Base>

@@ -1,0 +1,19 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  desc: string;
+  badge?: string;
+  badgeClass?: string;
+}
+
+const { href, title, desc, badge, badgeClass = 'badge-blue' } = Astro.props;
+---
+
+<li>
+  <a class="tool-card" href={href}>
+    <span class="tc-title">{title}</span>
+    <p class="tc-desc">{desc}</p>
+    {badge && <span class={`badge ${badgeClass} tc-badge`}>{badge}</span>}
+  </a>
+</li>

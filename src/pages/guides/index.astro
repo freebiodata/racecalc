@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'Guides: Sim Rig Geometry & Setup Explainers | RaceCalc';
+const description =
+  'Short, practical guides to sim rig geometry: correct FOV, triple screen setup, and how to verify both on track. Written to pair with our free calculators.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Guides' },
+];
+
+const guides = [
+  {
+    href: '/guides/fov-explained/',
+    title: 'FOV explained for sim racing',
+    desc: 'Why the correct FOV is a measurement, not a preference, and how to verify yours on track.',
+  },
+  {
+    href: '/guides/triple-screen-setup/',
+    title: 'Triple screen setup guide',
+    desc: 'Angles, distances and in-game settings for a seamless triple rig, measured properly.',
+  },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/guides/">
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>Guides</h1>
+      <p class="value-line">
+        Short, practical explainers for sim rig geometry. Each one pairs with a calculator so you can
+        act on it immediately.
+      </p>
+    </div>
+
+    <section class="section" aria-labelledby="list">
+      <h2 id="list" class="visually-hidden">All guides</h2>
+      <ul class="tool-cards">
+        {guides.map((g) => (
+          <li>
+            <a class="tool-card" href={g.href}>
+              <span class="tc-title">{g.title}</span>
+              <p class="tc-desc">{g.desc}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="soon">
+      <h2 id="soon">In the works</h2>
+      <p class="lead">
+        Coming next: a tire pressure unit primer for ACC and iRacing, and a wheelbase settings guide.
+        Want a topic covered? <a href="/contact/">Tell us</a>.
+      </p>
+    </section>
+  </div>
+</Base>

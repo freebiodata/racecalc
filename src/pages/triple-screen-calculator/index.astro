@@ -1,0 +1,248 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import TrustBlock from '../../components/TrustBlock.astro';
+import { site } from '../../data/site';
+
+const title = 'Triple Screen FOV Calculator for Sim Racing | RaceCalc';
+const description =
+  'Calculate the full FOV for triple screen sim racing rigs: per-screen angle, side screen rotation and bezel correction included. Free, in-browser.';
+
+const jsonLd = [
+  {
+    '@type': 'WebApplication',
+    '@id': `${site.url}/triple-screen-calculator/#app`,
+    name: 'Triple Screen FOV Calculator',
+    url: `${site.url}/triple-screen-calculator/`,
+    description:
+      'Compute per-screen and total FOV for triple screen sim racing rigs including side screen angles and bezel gaps.',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'All tools', href: '/tools/' },
+  { name: 'Triple screen calculator' },
+];
+
+const faq = [
+  {
+    q: 'What angle should my side screens be at?',
+    a: 'For a seamless arc (the ideal rig geometry), each side screen is rotated so its inner edge meets the centre screen at the same viewing distance: this equals the per-screen FOV, which the calculator shows (commonly 45–60° for typical rigs). Practical setups often use 30–50°; enter your actual angle for correct total FOV.',
+  },
+  {
+    q: 'Why does the total FOV matter?',
+    a: 'The total FOV is what the game should render so all three screens show continuous scenery with correct proportions. If the game FOV is too wide you get a fisheye look; too narrow and the side screens repeat part of the centre image.',
+  },
+  {
+    q: 'How do bezels factor in?',
+    a: 'Bezels occupy physical space between images. Real sim rigs hide them behind the side screen edges (angled setups) or account for them with a bezel correction in-game where the sim supports it. Our calculator adds the bezel width to the effective arc so the numbers stay accurate.',
+  },
+  {
+    q: 'Do all sims support triple screens properly?',
+    a: 'Most modern sims do (iRacing, ACC, rFactor 2, LMU, AMS2, F1 games all render multi-monitor). Some need a windowed/spanning setup at the OS level first. Check your sim\'s multi-view or triple-screen option, and put the total FOV value where the game expects its single value.',
+  },
+  {
+    q: 'Should the side screens be the same size as the centre screen?',
+    a: 'For the cleanest result, yes: mismatched sizes create different per-screen FOVs and visible discontinuities. If they differ, calculate each screen\'s FOV and use the smallest as your limiting value; the calculator supports equal triples (the common case) with the same formula applied per screen.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+  canonical="/triple-screen-calculator/"
+>
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>Triple Screen FOV Calculator</h1>
+      <p class="value-line">
+        Get the full rig FOV for triple screens: per-screen angle, the seamless-arc side screen rotation,
+        bezel corrections and the total value to enter in your sim.
+      </p>
+      <ul class="trust-microline">
+        <li class="badge badge-green">Runs in your browser</li>
+        <li class="badge">Free · No sign-up</li>
+        <li class="badge">Bezel + angle maths</li>
+      </ul>
+    </div>
+
+    <section class="tool" aria-labelledby="tool-heading">
+      <h2 id="tool-heading" class="visually-hidden">Triple screen calculator tool</h2>
+
+      <div class="tool-grid cols-2">
+        <div>
+          <div class="field">
+            <label for="size">Screen size (diagonal, inches, per screen)</label>
+            <input type="number" id="size" inputmode="decimal" min="10" max="120" step="0.1" value="27" />
+            <span class="error" role="alert">Enter a size between 10 and 120 inches.</span>
+          </div>
+          <div class="field">
+            <label for="aspect">Aspect ratio</label>
+            <select id="aspect">
+              <option value="16:9" selected>16:9 (2560×1440, 1920×1080)</option>
+              <option value="21:9">21:9 (3440×1440)</option>
+              <option value="16:10">16:10</option>
+              <option value="4:3">4:3</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="distance">Eye to centre screen distance</label>
+            <input type="number" id="distance" inputmode="decimal" min="20" max="300" step="0.5" value="60" />
+            <span class="helper" id="dist-hint">In centimetres.</span>
+            <span class="error" role="alert">Enter a distance between 20 and 300.</span>
+          </div>
+          <div class="field">
+            <label for="unit">Distance unit</label>
+            <select id="unit">
+              <option value="cm" selected>centimetres</option>
+              <option value="in">inches</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="side-angle">Side screen angle (degrees)</label>
+            <input type="number" id="side-angle" inputmode="decimal" min="0" max="90" step="1" value="45" />
+            <span class="helper">Rotation of each side screen from the centre screen plane. The calculator shows the seamless-arc value below.</span>
+            <span class="error" role="alert">Enter an angle between 0 and 90 degrees.</span>
+          </div>
+          <div class="field">
+            <label for="bezel">Bezel gap between screens (mm)</label>
+            <input type="number" id="bezel" inputmode="decimal" min="0" max="40" step="1" value="10" />
+            <span class="helper">Measure the visible gap between two screens (both edges together).</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="result-panel" style="margin-top:0;min-height:240px">
+            <div class="small muted">Total rig FOV (enter this in your sim)</div>
+            <div class="result-value" id="result-total">-</div>
+            <div class="result-meta">
+              <div class="kv"><div class="k">Per-screen FOV</div><div class="v" id="out-per">-</div></div>
+              <div class="kv"><div class="k">Seamless arc angle</div><div class="v" id="out-arc">-</div></div>
+              <div class="kv"><div class="k">With bezels</div><div class="v" id="out-bezel">-</div></div>
+              <div class="kv"><div class="k">Rig width</div><div class="v" id="out-width">-</div></div>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-primary" type="button" id="copy-btn"><span class="normal-label">Copy total FOV</span><span class="copied-label">✓ Copied</span></button>
+            </div>
+          </div>
+
+          <div class="callout" id="angle-note">
+            <div class="callout-title">Setup tip</div>
+            <p class="mb-0" id="angle-note-text">-</p>
+          </div>
+        </div>
+      </div>
+
+      <p class="small muted" style="margin-top:12px">
+        Everything is calculated locally in your browser. Nothing you enter is uploaded.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="how">
+      <h2 id="how">The triple screen geometry</h2>
+      <p>
+        A triple rig is three flat screens arranged on an arc. Each screen subtends its own FOV:
+        <code>F = 2 × atan( width ÷ (2 × distance) )</code>.
+        When the side screens are rotated by angle <code>A</code>, the rig's total visible angle is
+        <code>F + 2 × A</code> for the seam-free case where <code>A = F</code>; the calculator uses your
+        actual angle so custom rigs get the right number. Bezel correction adds the physical gap width to
+        the arc before the FOV conversion, since the image is continuous but the screens are not.
+      </p>
+      <p class="small muted">
+        This is the same geometry used across sim racing triple-screen guides; the formulas are written
+        out in full on the <a href="/methodology/">methodology page</a>.
+      </p>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        <strong>Method:</strong> planar projection with arc correction. If your sim has a specific
+        multi-view workflow, enter the total FOV in its triple-screen setting; otherwise split it as the
+        sim's options dictate. Corrections welcome via <a href="/contact/">contact</a>.
+      </p>
+    </TrustBlock>
+
+    <section class="section" aria-labelledby="related">
+      <h2 id="related">Related tools</h2>
+      <ul class="related-grid" style="list-style:none;padding:0">
+        <li><a class="tool-card" href="/fov-calculator/"><span class="tc-title">FOV Calculator</span><p class="tc-desc">Single screen and ultrawide FOV, with per-game notes.</p></a></li>
+        <li><a class="tool-card" href="/ppd-calculator/"><span class="tc-title">PPD Calculator</span><p class="tc-desc">Pixels per degree across your displays.</p></a></li>
+        <li><a class="tool-card" href="/fuel-calculator/"><span class="tc-title">Fuel &amp; Stint Calculator</span><p class="tc-desc">Race-distance fuel planning with margins.</p></a></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id)!;
+    const ASPECTS: Record<string, number> = { '16:9': 16 / 9, '21:9': 21 / 9, '16:10': 16 / 10, '4:3': 4 / 3 };
+    const rad = (d: number) => (d * Math.PI) / 180;
+    const deg = (r: number) => (r * 180) / Math.PI;
+
+    function compute() {
+      const sizeIn = parseFloat(($('size') as HTMLInputElement).value);
+      const aspect = ASPECTS[($('aspect') as HTMLSelectElement).value];
+      const dist = parseFloat(($('distance') as HTMLInputElement).value);
+      const unit = ($('unit') as HTMLSelectElement).value;
+      const sideAngle = parseFloat(($('side-angle') as HTMLInputElement).value);
+      const bezelMm = parseFloat(($('bezel') as HTMLInputElement).value) || 0;
+
+      const validSize = Number.isFinite(sizeIn) && sizeIn >= 10 && sizeIn <= 120;
+      const validDist = Number.isFinite(dist) && dist >= 20 && dist <= 300;
+      const validAngle = Number.isFinite(sideAngle) && sideAngle >= 0 && sideAngle <= 90;
+      document.querySelectorAll('.field').forEach((f) => f.classList.remove('invalid'));
+      if (!validSize) ($('size') as HTMLInputElement).closest('.field')!.classList.add('invalid');
+      if (!validDist) ($('distance') as HTMLInputElement).closest('.field')!.classList.add('invalid');
+      if (!validAngle) ($('side-angle') as HTMLInputElement).closest('.field')!.classList.add('invalid');
+      if (!validSize || !validDist || !validAngle) { $('result-total').textContent = '-'; return; }
+
+      const distIn = unit === 'in' ? dist : dist / 2.54;
+      const widthIn = (sizeIn * aspect) / Math.sqrt(aspect * aspect + 1);
+      const per = deg(2 * Math.atan(widthIn / (2 * distIn)));
+      const total = per + 2 * sideAngle;
+      const bezelIn = (bezelMm / 25.4) * 2; // two bezel gaps
+      const correctedWidth = widthIn * 3 + bezelIn;
+      const totalBezel = deg(2 * Math.atan(correctedWidth / 2 / distIn));
+      const rigWidthCm = (widthIn * 3) * 2.54;
+
+      $('result-total').textContent = `${total.toFixed(1)}°`;
+      $('out-per').textContent = `${per.toFixed(1)}°`;
+      $('out-arc').textContent = `${per.toFixed(1)}°`;
+      $('out-bezel').textContent = `${totalBezel.toFixed(1)}°`;
+      $('out-width').textContent = `${rigWidthCm.toFixed(0)} cm`;
+      (window as any).__total = total.toFixed(1);
+
+      $('angle-note-text').textContent = sideAngle < per - 5
+        ? `Your side screens (${sideAngle}°) are flatter than the seamless-arc angle (${per.toFixed(0)}°): the centre screen will overlap the side views slightly. Most rigs accept this; entering ${total.toFixed(1)}° total keeps proportions correct.`
+        : sideAngle > per + 5
+        ? `Your side screens (${sideAngle}°) are more aggressively angled than the seamless-arc value (${per.toFixed(0)}°): you gain wrap-around view at the cost of some overlap at the joins. Enter ${total.toFixed(1)}° total.`
+        : `Nice: your side screen angle (${sideAngle}°) matches the seamless-arc value (${per.toFixed(0)}°). This is the ideal geometry; enter ${total.toFixed(1)}° total.`;
+    }
+
+    ['size', 'aspect', 'distance', 'unit', 'side-angle', 'bezel'].forEach((id) => $(id).addEventListener('input', compute));
+
+    $('copy-btn').addEventListener('click', async () => {
+      const v = (window as any).__total;
+      if (!v || v === '-') return;
+      try { await navigator.clipboard.writeText(v); } catch {
+        const ta = document.createElement('textarea'); ta.value = v;
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+      }
+      const btn = $('copy-btn'); btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1800);
+    });
+
+    compute();
+  </script>
+</Base>

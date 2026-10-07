@@ -1,0 +1,119 @@
+---
+import Base from '../layouts/Base.astro';
+import ToolCard from '../components/ToolCard.astro';
+import { site } from '../data/site';
+
+const title = 'RaceCalc: Free Sim Racing FOV & Setup Calculators';
+const description =
+  'Free browser calculators for sim racing: correct FOV for any rig, triple screens, pixels per degree, fuel planning. No sign-up, nothing uploaded.';
+
+const tools = [
+  {
+    href: '/fov-calculator/',
+    title: 'FOV Calculator',
+    desc: 'The mathematically correct FOV for your screen and distance, with per-game notes for iRacing, ACC, LMU and more.',
+    badge: 'Most used',
+  },
+  {
+    href: '/triple-screen-calculator/',
+    title: 'Triple Screen Calculator',
+    desc: 'Full rig FOV with per-screen angles, side screen rotation and bezel correction.',
+  },
+  {
+    href: '/ppd-calculator/',
+    title: 'PPD Calculator',
+    desc: 'Pixels per degree: compare resolutions, triples and VR for visual clarity.',
+  },
+  {
+    href: '/fuel-calculator/',
+    title: 'Fuel & Stint Calculator',
+    desc: 'Turn practice data into a race plan: fuel per stint, safe laps, stint count.',
+  },
+];
+
+const guides = [
+  {
+    href: '/guides/fov-explained/',
+    title: 'FOV explained for sim racing',
+    desc: 'Why the correct FOV is a measurement, not a preference, and how to verify yours.',
+  },
+  {
+    href: '/guides/triple-screen-setup/',
+    title: 'Triple screen setup guide',
+    desc: 'Angles, distances and in-game settings for a seamless triple rig.',
+  },
+];
+---
+
+<Base title={title} description={description} canonical="/">
+  <div class="wrap">
+    <div class="hero" style="padding-top:40px">
+      <h1>Free sim racing FOV &amp; setup calculators</h1>
+      <p class="value-line" style="font-size:1.15rem">
+        Get the geometry right: correct FOV for your rig, triple screen angles, pixels per degree and
+        race fuel plans. <strong>No sign-up, everything runs in your browser.</strong>
+      </p>
+      <ul class="trust-microline">
+        <li class="badge badge-green">100% client-side math</li>
+        <li class="badge">Single, ultrawide &amp; triple rigs</li>
+        <li class="badge">Per-game FOV notes</li>
+      </ul>
+      <div class="result-actions" style="margin-top:22px">
+        <a class="btn btn-primary" href="/fov-calculator/" style="padding:12px 24px;font-size:1.05rem">
+          Calculate my FOV →
+        </a>
+        <a class="btn btn-secondary" href="/tools/" style="padding:12px 24px;font-size:1.05rem">Browse all tools</a>
+      </div>
+    </div>
+
+    <section class="section" aria-labelledby="tools-heading">
+      <h2 id="tools-heading">The toolkit</h2>
+      <ul class="tool-cards">
+        {tools.map((t) => (
+          <ToolCard href={t.href} title={t.title} desc={t.desc} badge={t.badge} />
+        ))}
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="why">
+      <h2 id="why">Why RaceCalc</h2>
+      <div class="card">
+        <ul style="margin:0">
+          <li><strong>Geometry, not folklore.</strong> Every calculator applies standard projection maths to your real measurements, with the formulas published on the <a href="/methodology/">methodology page</a>.</li>
+          <li><strong>Everything runs locally.</strong> No uploads, no accounts, no tracking of the numbers you enter.</li>
+          <li><strong>Built for actual rigs.</strong> Single screens, ultrawides, triples with bezel gaps, and per-game quirks documented in one place.</li>
+          <li><strong>Honest limits.</strong> Where a game hides its FOV behind an unknown slider scale, we say so instead of pretending precision.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="guides-heading">
+      <h2 id="guides-heading">Learn the geometry</h2>
+      <ul class="related-grid" style="list-style:none;padding:0">
+        {guides.map((g) => (
+          <li>
+            <a class="tool-card" href={g.href}>
+              <span class="tc-title">{g.title}</span>
+              <p class="tc-desc">{g.desc}</p>
+            </a>
+          </li>
+        ))}
+        <li>
+          <a class="tool-card" href="/guides/">
+            <span class="tc-title">All guides →</span>
+            <p class="tc-desc">Practical explainers for sim rig geometry and race craft.</p>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="about-summ">
+      <h2 id="about-summ">Who runs this site</h2>
+      <p class="lead">
+        RaceCalc is an independent, sim-racer-run toolset. We built the calculators we wanted for our own
+        rigs. <a href="/about/">Read the full story</a> or check the <a href="/methodology/">methodology</a>
+        behind every formula.
+      </p>
+    </section>
+  </div>
+</Base>

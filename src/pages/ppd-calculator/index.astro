@@ -1,0 +1,223 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import TrustBlock from '../../components/TrustBlock.astro';
+import { site } from '../../data/site';
+
+const title = 'PPD Calculator: Pixels Per Degree for Sim Racing | RaceCalc';
+const description =
+  'Calculate pixels per degree for your sim racing display: compare 1080p, 1440p, 4K, ultrawides and VR headsets on visual clarity and immersion. Free tool.';
+
+const jsonLd = [
+  {
+    '@type': 'WebApplication',
+    '@id': `${site.url}/ppd-calculator/#app`,
+    name: 'Pixels Per Degree Calculator',
+    url: `${site.url}/ppd-calculator/`,
+    description:
+      'Compute pixels per degree of field of view for flat screens, ultrawides and VR headsets to compare visual clarity.',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'All tools', href: '/tools/' },
+  { name: 'PPD calculator' },
+];
+
+const faq = [
+  {
+    q: 'What is PPD (pixels per degree)?',
+    a: 'PPD is how many pixels represent each degree of your field of view. It is the number that decides how sharp the world looks at a given FOV: more pixels per degree means less aliasing and easier spot-the-apex clarity. It combines resolution, screen size and viewing distance into one figure.',
+  },
+  {
+    q: 'What PPD do I need for sim racing?',
+    a: 'Rough guide: 60 PPD is comfortable, 80+ is crisp for distant detail (braking markers, apexes), and 100+ approaches "retina" for most people at normal viewing distances. Triple screens and bigger resolutions raise PPD; sitting closer raises it too (but also raises FOV).',
+  },
+  {
+    q: 'How does VR compare?',
+    a: 'VR clarity is also measured in PPD. Early headsets were around 10–20 PPD over their full FOV; modern ones reach 25–35 PPD in the centre. The difference from screens: VR fills your whole FOV, so PPD is lower but immersion much higher. The calculator shows the comparison.',
+  },
+  {
+    q: 'Do triple screens improve PPD?',
+    a: 'Not by themselves: total PPD is total pixels ÷ total FOV degrees. Three 1440p screens add pixels AND FOV, so the ratio improves versus one screen only because the extra FOV is smaller than the extra pixels relative to the single-screen case. The calculator handles the full rig comparison.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+  canonical="/ppd-calculator/"
+>
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>Pixels Per Degree (PPD) Calculator</h1>
+      <p class="value-line">
+        One number for screen clarity in sim racing: how many pixels you get per degree of view.
+        Compare resolutions, screen sizes, triples and VR at a glance.
+      </p>
+      <ul class="trust-microline">
+        <li class="badge badge-green">Runs in your browser</li>
+        <li class="badge">Free · No sign-up</li>
+        <li class="badge">Screens + VR</li>
+      </ul>
+    </div>
+
+    <section class="tool" aria-labelledby="tool-heading">
+      <h2 id="tool-heading" class="visually-hidden">PPD calculator tool</h2>
+
+      <div class="tool-grid cols-2">
+        <div>
+          <div class="field">
+            <label for="setup">Setup type</label>
+            <select id="setup">
+              <option value="single" selected>Single screen</option>
+              <option value="triple">Triple screens</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="res">Resolution</label>
+            <select id="res">
+              <option value="1920x1080" selected>1920 × 1080 (FHD)</option>
+              <option value="2560x1440">2560 × 1440 (QHD)</option>
+              <option value="3440x1440">3440 × 1440 (UWQHD)</option>
+              <option value="3840x2160">3840 × 2160 (4K UHD)</option>
+              <option value="5120x1440">5120 × 1440 (super ultrawide)</option>
+              <option value="7680x2160">7680 × 2160 (dual 4K)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="size">Screen size (diagonal, inches, per screen)</label>
+            <input type="number" id="size" inputmode="decimal" min="10" max="120" step="0.1" value="27" />
+          </div>
+          <div class="field">
+            <label for="distance">Eye to screen distance</label>
+            <input type="number" id="distance" inputmode="decimal" min="20" max="300" step="0.5" value="60" />
+            <span class="helper" id="dist-hint">In centimetres.</span>
+          </div>
+          <div class="field">
+            <label for="unit">Distance unit</label>
+            <select id="unit">
+              <option value="cm" selected>centimetres</option>
+              <option value="in">inches</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <div class="result-panel" style="margin-top:0;min-height:220px">
+            <div class="small muted">Your pixels per degree</div>
+            <div class="result-value" id="result-ppd">-</div>
+            <div class="result-meta">
+              <div class="kv"><div class="k">Total FOV</div><div class="v" id="out-fov">-</div></div>
+              <div class="kv"><div class="k">Total pixels</div><div class="v" id="out-px">-</div></div>
+              <div class="kv"><div class="k">Verdict</div><div class="v" id="out-verdict">-</div></div>
+            </div>
+          </div>
+
+          <div class="callout" style="margin-top:14px">
+            <div class="callout-title">Reference PPD targets</div>
+            <ul class="mb-0 small">
+              <li><strong>60 PPD</strong>, comfortable; fine for casual racing</li>
+              <li><strong>80 PPD</strong>, crisp; apexes and braking markers are clear</li>
+              <li><strong>100+ PPD</strong>, retina-class at normal distances</li>
+              <li><strong>VR (reference)</strong>, 20–35 PPD (fills your full view)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <p class="small muted" style="margin-top:12px">
+        Calculated locally in your browser. Nothing you enter is uploaded.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="how">
+      <h2 id="how">How PPD is calculated</h2>
+      <p>
+        <code>PPD = horizontal pixels ÷ horizontal FOV</code>, where the FOV is what the screen(s)
+        subtend from your eye position: <code>hFOV = 2 × atan( total width ÷ (2 × distance) )</code>.
+        Resolution sets the pixel count, geometry sets the angle. That is the whole model, applied
+        per your setup above.
+      </p>
+      <p class="small muted">
+        The same maths underlies headset specs and monitor reviews; our <a href="/methodology/">methodology page</a>
+        shows the worked examples with sources.
+      </p>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        <strong>Note:</strong> PPD describes clarity at the centre of view; peripheral pixels cover more
+        degrees each on flat screens (that is distortion, not lower PPD). For triple rigs we use the total
+        span across all screens.
+      </p>
+    </TrustBlock>
+
+    <section class="section" aria-labelledby="related">
+      <h2 id="related">Related tools</h2>
+      <ul class="related-grid" style="list-style:none;padding:0">
+        <li><a class="tool-card" href="/fov-calculator/"><span class="tc-title">FOV Calculator</span><p class="tc-desc">The FOV that matches your geometry.</p></a></li>
+        <li><a class="tool-card" href="/triple-screen-calculator/"><span class="tc-title">Triple Screen Calculator</span><p class="tc-desc">Full rig FOV with angles and bezels.</p></a></li>
+        <li><a class="tool-card" href="/fuel-calculator/"><span class="tc-title">Fuel &amp; Stint Calculator</span><p class="tc-desc">Plan your next race distance.</p></a></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id)!;
+    const rad = (d: number) => (d * Math.PI) / 180;
+    const deg = (r: number) => (r * 180) / Math.PI;
+
+    function compute() {
+      const setup = ($('setup') as HTMLSelectElement).value;
+      const [pxW, pxH] = ($('res') as HTMLSelectElement).value.split('x').map(Number);
+      const sizeIn = parseFloat(($('size') as HTMLInputElement).value);
+      const dist = parseFloat(($('distance') as HTMLInputElement).value);
+      const unit = ($('unit') as HTMLSelectElement).value;
+
+      const validSize = Number.isFinite(sizeIn) && sizeIn >= 10 && sizeIn <= 120;
+      const validDist = Number.isFinite(dist) && dist >= 20 && dist <= 300;
+      ($('size') as HTMLInputElement).closest('.field')!.classList.toggle('invalid', !validSize);
+      ($('distance') as HTMLInputElement).closest('.field')!.classList.toggle('invalid', !validDist);
+      if (!validSize || !validDist) { $('result-ppd').textContent = '-'; return; }
+
+      const aspect = pxW / pxH;
+      const distIn = unit === 'in' ? dist : dist / 2.54;
+      const widthIn = (sizeIn * aspect) / Math.sqrt(aspect * aspect + 1);
+
+      let totalPx: number, totalWidthIn: number;
+      if (setup === 'triple') {
+        totalPx = pxW * 3;
+        totalWidthIn = widthIn * 3;
+      } else {
+        totalPx = pxW;
+        totalWidthIn = widthIn;
+      }
+
+      const hFov = deg(2 * Math.atan(totalWidthIn / (2 * distIn)));
+      const ppd = totalPx / hFov;
+
+      $('result-ppd').textContent = ppd.toFixed(1);
+      $('out-fov').textContent = `${hFov.toFixed(1)}°`;
+      $('out-px').textContent = `${(totalPx / 1e6).toFixed(1)} MP`;
+      const verdict = ppd >= 100 ? 'Retina-class' : ppd >= 80 ? 'Crisp' : ppd >= 60 ? 'Comfortable' : ppd >= 40 ? 'Modest' : 'Low (aliasing likely)';
+      $('out-verdict').textContent = verdict;
+      (window as any).__ppd = ppd.toFixed(1);
+    }
+
+    ['setup', 'res', 'size', 'distance', 'unit'].forEach((id) => $(id).addEventListener('input', compute));
+    compute();
+  </script>
+</Base>

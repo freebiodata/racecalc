@@ -1,0 +1,109 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Faq from '../../../components/Faq.astro';
+import TrustBlock from '../../../components/TrustBlock.astro';
+import { site } from '../../../data/site';
+
+const title = 'Triple Screen Setup Guide for Sim Racing: Angles & FOV';
+const description =
+  'How to set up triple screens for sim racing: measure your rig, choose side angles, handle bezels, and enter the right FOV in each sim. Practical guide.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Guides', href: '/guides/' },
+  { name: 'Triple screen setup' },
+];
+
+const faq = [
+  {
+    q: 'What is the best side screen angle for triples?',
+    a: 'The seamless-arc value: each side screen rotated so all three screens sit at the same distance from your eyes around a curve. This equals the per-screen FOV and typically lands between 40 and 60 degrees for common screen sizes and distances. The <a href="/triple-screen-calculator/">triple screen calculator</a> shows your exact value.',
+  },
+  {
+    q: 'Should I use in-game bezel correction or move the monitors?',
+    a: 'Physical solutions are better: overlap the side screen edges slightly behind the centre screen bezels so the image is continuous. If your sim supports bezel correction and hiding is impossible, set the measured bezel width there. Either way, keep the screens on the arc.',
+  },
+  {
+    q: 'Do I need identical monitors?',
+    a: 'Strongly recommended: different sizes or panels create per-screen FOV mismatches and colour discontinuities. If you already run mixed sizes, angle and position for the centre screen, accept some imperfection at the joins, and keep the game FOV based on the centre screen.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  canonical="/guides/triple-screen-setup/"
+  type="article"
+  jsonLd={[
+    {
+      '@type': 'Article',
+      headline: 'Triple Screen Setup Guide for Sim Racing: Angles & FOV',
+      datePublished: '2026-10-08',
+      dateModified: '2026-10-08',
+      author: { '@type': 'Organization', name: site.name, url: `${site.url}/about/` },
+    },
+  ]}
+>
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Triple screen setup guide</h1>
+    <p class="lead">
+      Triples are the classic sim upgrade: wrap-around view without a headset. The difference between a
+      great triple rig and a frustrating one is entirely in the geometry. Here is the pipeline.
+    </p>
+    <p class="small muted">Published 08 Oct 2026 · By the RaceCalc team</p>
+
+    <section class="section">
+      <h2 id="measure">Step 1: Measure properly</h2>
+      <ul>
+        <li><strong>Eye-to-screen distance</strong> to the centre screen surface, in your actual driving position. Tape a ruler from your eye line to the glass if needed.</li>
+        <li><strong>Screen width</strong> of one monitor (bezel to bezel edge, the visible panel).</li>
+        <li><strong>Bezel width</strong> of one edge (the visible plastic gap).</li>
+        <li><strong>Side angle</strong>: the rotation of each side screen away from the centre screen's plane.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="geometry">Step 2: Get the geometry right</h2>
+      <ol class="steps">
+        <li><strong>Set the arc.</strong> The ideal: all three screens lie on a circle centred on your eyes. In practice you approximate this by angling each side screen by the "seamless arc angle", which equals the per-screen FOV.</li>
+        <li><strong>Hide the bezels.</strong> Slide side screens slightly behind the centre screen so their inner edges overlap the centre bezel. The image then flows unbroken across the joins.</li>
+        <li><strong>Lock your seating first.</strong> Measure and set FOV only after your seat position is stable; moving the rig invalidates the numbers.</li>
+        <li><strong>Compute the numbers</strong> with the <a href="/triple-screen-calculator/">triple screen calculator</a>: per-screen FOV, seamless arc angle, bezel-corrected total FOV.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2 id="ingame">Step 3: In-game settings</h2>
+      <ul>
+        <li><strong>Multi-view / triple screen mode:</strong> enable it where the sim offers it (iRacing, ACC, rFactor 2, LMU, AMS2). Without it some sims render one stretched window.</li>
+        <li><strong>FOV:</strong> enter the total value from the calculator where the game asks for a single FOV. If it asks per monitor, enter the per-screen value.</li>
+        <li><strong>Bezel correction:</strong> use the in-game value only if you cannot hide the bezels physically. Set it to the real measured width.</li>
+        <li><strong>Resolution:</strong> run the combined resolution (e.g. 7680×1440 for three 1440p panels) and let the sim span; avoid OS-level stretching tools that change aspect.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="verify">Step 4: Verify on track</h2>
+      <ul>
+        <li>Drive a straight: scenery should flow continuously across the joins with no duplicated or missing band.</li>
+        <li>Check the seams for distortion: a straight guardrail should remain straight, not kink, as it crosses a bezel.</li>
+        <li>Run the <a href="/guides/fov-explained/">FOV verification tests</a> on the centre screen.</li>
+      </ul>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        The geometry here is the standard planar arc model; formulas are on the
+        <a href="/methodology/">methodology page</a>. Rig photos and community conventions vary; the
+        numbers do not.
+      </p>
+    </TrustBlock>
+  </div>
+</Base>

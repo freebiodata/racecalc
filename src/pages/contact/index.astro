@@ -1,0 +1,62 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'Contact RaceCalc: Corrections, Feedback & Questions';
+const description =
+  'Contact RaceCalc: report a wrong game note, suggest a tool, or ask a question. Corrections with a source get priority and a changelog credit.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Contact' },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/contact/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Contact</h1>
+    <p class="lead">
+      Corrections, tool requests, questions. We read everything; corrections with a source get priority
+      and a changelog credit.
+    </p>
+
+    <section class="section">
+      <h2 id="email">Email</h2>
+      <p><strong>{site.email}</strong></p>
+      <p class="small muted">We typically reply within 3 business days.</p>
+    </section>
+
+    <section class="section">
+      <h2 id="report">Reporting a wrong number or game note</h2>
+      <p>To make a correction fast, include:</p>
+      <ul>
+        <li>the tool and the exact value or note you believe is wrong;</li>
+        <li>the value you believe is correct;</li>
+        <li>a source (screenshot, game documentation, or your own measurements/settings).</li>
+      </ul>
+      <p>
+        We verify every report against our <a href="/methodology/">methodology</a> before changing
+        shipped values, then log it in the <a href="/changelog/">changelog</a>.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="feature">Tool requests</h2>
+      <p>
+        Want a calculator we do not have yet, or coverage for your sim? Tell us the sim and what you
+        need to work out. Requests that come with how the sim exposes the setting (menu names, config
+        keys, slider ranges) move to the front of the queue.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="privacy-note">Privacy</h2>
+      <p class="small muted">
+        Emails we receive are kept only to handle your request. See the <a href="/privacy/">privacy policy</a> for details.
+      </p>
+    </section>
+  </div>
+</Base>

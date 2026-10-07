@@ -1,0 +1,72 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'About RaceCalc: Who We Are & Why These Tools Exist';
+const description =
+  'RaceCalc is an independent, sim-racer-run toolset for rig geometry and race planning: who builds it, how the calculators are tested, and how it stays free.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'About' },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/about/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>About RaceCalc</h1>
+    <p class="lead">
+      We build the sim racing calculators we kept wishing existed while setting up our own rigs:
+      exact on the geometry, honest about the limits, free of clutter.
+    </p>
+
+    <section class="section">
+      <h2 id="why">Why this site exists</h2>
+      <p>
+        FOV advice online swings between "set it to 45 and forget it" and spreadsheets that assume you
+        know what "monitor distance" means. The underlying maths is simple: your screens are windows and
+        the sim must project through them. RaceCalc turns that maths into fast, no-nonsense tools that run
+        entirely in your browser.
+      </p>
+      <p>
+        We also noticed sim UIs hide their FOV behind inconsistent conventions, vertical here, horizontal
+        there, an unbounded slider elsewhere, with no single place documenting which value to enter where.
+        We keep that map on the tool pages, with the formulas behind every number published on the
+        <a href="/methodology/">methodology page</a>.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="how">How the tools are built &amp; tested</h2>
+      <ul>
+        <li><strong>Formulas from first principles.</strong> Projection maths applied to your physical measurements; no magic constants.</li>
+        <li><strong>Tested against known values.</strong> Every formula has a hand-verified test case that must pass before deploy.</li>
+        <li><strong>Client-side only.</strong> No build step sends your inputs anywhere; there is no server that could receive them.</li>
+        <li><strong>Corrections are welcome and credited.</strong> If a constant or game note is wrong, <a href="/contact/">tell us</a> and we will fix it with a changelog entry.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="money">How the site makes money</h2>
+      <p>
+        Right now: nothing. RaceCalc is independent and self-funded. If we ever add sponsorships or
+        affiliate links, they will be clearly labelled (<code>rel="sponsored"</code>) and will never
+        affect recommendations. Tools stay free.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="people">Who runs it</h2>
+      <p>
+        A small crew of sim racers and software engineers. We run triples at home, spend too long
+        measuring eye distances, and rebuild rigs more often than is reasonable.
+      </p>
+      <p class="small muted">
+        For corrections or partnership enquiries: <a href="/contact/">contact page</a> or {site.email}.
+      </p>
+    </section>
+  </div>
+</Base>

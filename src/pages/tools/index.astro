@@ -1,0 +1,98 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { site } from '../../data/site';
+
+const title = 'All Tools: Sim Racing Calculators & Reference | RaceCalc';
+const description =
+  'Every RaceCalc tool in one place: FOV, triple screen, PPD and fuel calculators for sim racing. Free, in-browser, no sign-up.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'All tools' },
+];
+
+const display = [
+  { href: '/fov-calculator/', title: 'FOV Calculator', desc: 'Correct FOV from screen size and distance, with per-game entry notes.' },
+  { href: '/triple-screen-calculator/', title: 'Triple Screen Calculator', desc: 'Total rig FOV with side angles and bezel correction.' },
+  { href: '/ppd-calculator/', title: 'PPD Calculator', desc: 'Pixels per degree for screens, triples and VR comparison.' },
+];
+
+const planning = [
+  { href: '/fuel-calculator/', title: 'Fuel & Stint Calculator', desc: 'Fuel margins, safe laps per tank, stint planning and timing.' },
+];
+
+const chooser = [
+  ['My car looks distorted / too wide', 'FOV Calculator'],
+  ['I run triple screens', 'Triple Screen Calculator'],
+  ['Text and far objects look blurry', 'PPD Calculator'],
+  ['I keep running out of fuel in races', 'Fuel & Stint Calculator'],
+  ['I moved my rig and nothing feels right', 'FOV Calculator (re-measure distance)'],
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  canonical="/tools/"
+>
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>All tools</h1>
+      <p class="value-line">
+        Four focused calculators for sim racing rigs and race craft, all free and running entirely in
+        your browser.
+      </p>
+    </div>
+
+    <section class="section" aria-labelledby="display">
+      <h2 id="display" style="margin-top:0">Display geometry</h2>
+      <ul class="tool-cards">
+        {display.map((t) => <ToolCard href={t.href} title={t.title} desc={t.desc} />)}
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="planning">
+      <h2 id="planning">Race planning</h2>
+      <ul class="tool-cards">
+        {planning.map((t) => <ToolCard href={t.href} title={t.title} desc={t.desc} />)}
+      </ul>
+    </section>
+
+    <section class="section" aria-labelledby="chooser">
+      <h2 id="chooser">Which tool do I need?</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Your problem</th><th>Start here</th></tr></thead>
+          <tbody>
+            {chooser.map(([problem, tool]) => (
+              <tr><td>{problem}</td><td>{tool}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="faq-cat">
+      <h2 id="faq-cat">Quick answers</h2>
+      <div class="faq">
+        <details>
+          <summary>Are all the tools really free?</summary>
+          <div class="faq-body"><p>Yes. No sign-up, no watermark, no caps. The maths runs in your browser, so there is nothing to meter.</p></div>
+        </details>
+        <details>
+          <summary>Do the tools store my settings?</summary>
+          <div class="faq-body"><p>No. Values you enter are processed locally and never transmitted or saved after you close the tab.</p></div>
+        </details>
+        <details>
+          <summary>Which sims are covered?</summary>
+          <div class="faq-body"><p>The geometry tools work for any sim. Per-game FOV entry notes currently cover iRacing, Assetto Corsa, ACC, Le Mans Ultimate, rFactor 2, Automobilista 2, F1 23–25 and GT7; we extend the list as patches change UIs.</p></div>
+        </details>
+      </div>
+    </section>
+  </div>
+</Base>

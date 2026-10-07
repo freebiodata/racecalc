@@ -1,0 +1,218 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import TrustBlock from '../../components/TrustBlock.astro';
+import { site } from '../../data/site';
+
+const title = 'Sim Racing Fuel & Stint Calculator | RaceCalc';
+const description =
+  'Plan race fuel and stints: liters per lap, stint length, fuel margins and stint counts for any race distance. Works for iRacing, ACC, LMU and more. Free.';
+
+const jsonLd = [
+  {
+    '@type': 'WebApplication',
+    '@id': `${site.url}/fuel-calculator/#app`,
+    name: 'Sim Racing Fuel & Stint Calculator',
+    url: `${site.url}/fuel-calculator/`,
+    description:
+      'Plan fuel loads, stint lengths and stint counts for sim races from consumption per lap and tank size.',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'All tools', href: '/tools/' },
+  { name: 'Fuel & stint calculator' },
+];
+
+const faq = [
+  {
+    q: 'How do I find my fuel per lap?',
+    a: 'Best method: run a full stint of practice laps in the car you will race (same fuel map, same driving style) and divide total fuel used by laps completed. Lap-time variation, drafting and lift-and-coast can change it by a few percent, which is why the calculator includes a safety margin.',
+  },
+  {
+    q: 'What safety margin should I use?',
+    a: 'A 1–2% margin is common for stable series; add more (3–5%) for variable conditions, traffic-heavy starts, or unfamiliar tracks. The margin protects against a slightly higher consumption on race day versus your practice average.',
+  },
+  {
+    q: 'How do I convert this to stint count?',
+    a: 'Divide race laps by your safe laps per tank (tank size ÷ per-lap consumption, minus any reserve). Round up for the number of stops, and the calculator shows a balanced plan: equal-length stints with the last stint adjusted.',
+  },
+  {
+    q: 'Does this work for fuel-saving races?',
+    a: 'Yes: lower the per-lap consumption figure to match your saving pace, and the stint calculation adapts. Note that fuel saving usually costs lap time; the stint time estimate uses your lap time input, so enter the pace you actually intend to run.',
+  },
+  {
+    q: 'Which sims does this apply to?',
+    a: 'Any sim where you know consumption per lap and tank capacity (litres or gallons): iRacing, ACC, Le Mans Ultimate, rFactor 2, AMS2, RaceRoom and the F1 games all fit. The maths is unit-agnostic: use litres or gallons consistently.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+  canonical="/fuel-calculator/"
+>
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>Fuel &amp; Stint Calculator</h1>
+      <p class="value-line">
+        Turn your practice data into a race plan: fuel per stint, safe laps per tank, stint count and
+        timing for any race distance. Works in litres or gallons.
+      </p>
+      <ul class="trust-microline">
+        <li class="badge badge-green">Runs in your browser</li>
+        <li class="badge">Free · No sign-up</li>
+        <li class="badge">Margin-aware planning</li>
+      </ul>
+    </div>
+
+    <section class="tool" aria-labelledby="tool-heading">
+      <h2 id="tool-heading" class="visually-hidden">Fuel calculator tool</h2>
+
+      <div class="tool-grid cols-3">
+        <div class="field">
+          <label for="per-lap">Fuel per lap</label>
+          <input type="number" id="per-lap" inputmode="decimal" min="0.1" max="30" step="0.01" value="3.2" />
+          <span class="helper" id="fuel-unit-hint">Litres (or gallons, stay consistent).</span>
+          <span class="error" role="alert">Enter consumption between 0.1 and 30.</span>
+        </div>
+        <div class="field">
+          <label for="tank">Tank capacity</label>
+          <input type="number" id="tank" inputmode="decimal" min="5" max="500" step="1" value="100" />
+          <span class="error" role="alert">Enter a tank size between 5 and 500.</span>
+        </div>
+        <div class="field">
+          <label for="race-laps">Race distance (laps)</label>
+          <input type="number" id="race-laps" inputmode="numeric" min="1" max="2000" step="1" value="60" />
+          <span class="error" role="alert">Enter laps between 1 and 2000.</span>
+        </div>
+      </div>
+
+      <div class="tool-grid cols-2" style="margin-top:14px">
+        <div class="field">
+          <label for="margin">Safety margin (%)</label>
+          <input type="number" id="margin" inputmode="decimal" min="0" max="20" step="0.5" value="2" />
+          <span class="helper">1–2% typical; 3–5% for unstable conditions.</span>
+        </div>
+        <div class="field">
+          <label for="lap-time">Average lap time (m:ss)</label>
+          <input type="text" id="lap-time" inputmode="text" value="1:45" placeholder="e.g. 1:45" />
+          <span class="helper">Used for stint time estimates.</span>
+        </div>
+      </div>
+
+      <div class="result-panel" aria-live="polite">
+        <div class="small muted">Race plan</div>
+        <div class="result-value" id="plan-headline">-</div>
+        <div class="result-meta">
+          <div class="kv"><div class="k">Fuel per stint</div><div class="v" id="out-per-stint">-</div></div>
+          <div class="kv"><div class="k">Safe laps per tank</div><div class="v" id="out-safe-laps">-</div></div>
+          <div class="kv"><div class="k">Stints / stops</div><div class="v" id="out-stints">-</div></div>
+          <div class="kv"><div class="k">Total fuel needed</div><div class="v" id="out-total-fuel">-</div></div>
+          <div class="kv"><div class="k">Est. stint time</div><div class="v" id="out-stint-time">-</div></div>
+          <div class="kv"><div class="k">Est. race time</div><div class="v" id="out-race-time">-</div></div>
+        </div>
+      </div>
+
+      <p class="small muted" style="margin-top:12px">
+        Runs entirely in your browser. Nothing you enter is uploaded or stored.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="how">
+      <h2 id="how">How the fuel plan is calculated</h2>
+      <p>
+        <code>fuel per lap (with margin) = practice fuel per lap × (1 + margin)</code>.
+        <code>safe laps per tank = floor(tank ÷ fueled-per-lap)</code>.
+        <code>stints = ceil(race laps ÷ safe laps per tank)</code>, then laps are spread evenly across
+        stints (the last stint takes the remainder). Stint time is laps × your lap time; add pit-lane
+        time separately if you are comparing strategies.
+      </p>
+      <p class="small muted">
+        Formula walk-through with a worked example is on the <a href="/methodology/">methodology page</a>.
+      </p>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        <strong>Practical note:</strong> consumption varies with conditions, traffic and fuel saving.
+        Re-check after your first stint if the race is longer than an hour.
+      </p>
+    </TrustBlock>
+
+    <section class="section" aria-labelledby="related">
+      <h2 id="related">Related tools</h2>
+      <ul class="related-grid" style="list-style:none;padding:0">
+        <li><a class="tool-card" href="/fov-calculator/"><span class="tc-title">FOV Calculator</span><p class="tc-desc">Correct FOV for your rig first, then plan the race.</p></a></li>
+        <li><a class="tool-card" href="/ppd-calculator/"><span class="tc-title">PPD Calculator</span><p class="tc-desc">Clarity check for your displays.</p></a></li>
+        <li><a class="tool-card" href="/triple-screen-calculator/"><span class="tc-title">Triple Screen Calculator</span><p class="tc-desc">Full rig FOV with bezels and angles.</p></a></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id)!;
+
+    function parseLapTime(t: string): number {
+      const m = t.trim().match(/^(\d+):(\d+(?:\.\d+)?)$/);
+      if (m) return parseInt(m[1]) * 60 + parseFloat(m[2]);
+      const s = parseFloat(t);
+      return Number.isFinite(s) && s > 0 ? s : NaN;
+    }
+    function fmtTime(sec: number): string {
+      if (!Number.isFinite(sec) || sec <= 0) return '-';
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = Math.round(sec % 60);
+      return h > 0 ? `${h}h ${m}m ${s}s` : `${m}m ${s}s`;
+    }
+
+    function compute() {
+      const perLap = parseFloat(($('per-lap') as HTMLInputElement).value);
+      const tank = parseFloat(($('tank') as HTMLInputElement).value);
+      const laps = parseFloat(($('race-laps') as HTMLInputElement).value);
+      const margin = parseFloat(($('margin') as HTMLInputElement).value) || 0;
+
+      const validA = Number.isFinite(perLap) && perLap >= 0.1 && perLap <= 30;
+      const validB = Number.isFinite(tank) && tank >= 5 && tank <= 500;
+      const validC = Number.isFinite(laps) && laps >= 1 && laps <= 2000;
+      ($('per-lap') as HTMLInputElement).closest('.field')!.classList.toggle('invalid', !validA);
+      ($('tank') as HTMLInputElement).closest('.field')!.classList.toggle('invalid', !validB);
+      ($('race-laps') as HTMLInputElement).closest('.field')!.classList.toggle('invalid', !validC);
+      if (!validA || !validB || !validC) { $('plan-headline').textContent = '-'; return; }
+
+      const fueled = perLap * (1 + margin / 100);
+      const safeLaps = Math.floor(tank / fueled);
+      const stints = Math.ceil(laps / safeLaps);
+      const lapsPerStint = Math.ceil(laps / stints);
+      const lastStint = laps - lapsPerStint * (stints - 1);
+      const totalFuel = laps * fueled;
+
+      const lapTime = parseLapTime(($('lap-time') as HTMLInputElement).value);
+
+      $('plan-headline').textContent = `${stints} stint${stints > 1 ? 's' : ''} · ${lapsPerStint} laps each (last: ${lastStint})`;
+      $('out-per-stint').textContent = `${(lapsPerStint * fueled).toFixed(1)}`;
+      $('out-safe-laps').textContent = `${safeLaps} laps`;
+      $('out-stints').textContent = `${stints} (${stints - 1} stop${stints - 1 === 1 ? '' : 's'})`;
+      $('out-total-fuel').textContent = `${totalFuel.toFixed(1)}`;
+      $('out-stint-time').textContent = fmtTime(lapsPerStint * lapTime);
+      $('out-race-time').textContent = fmtTime(laps * lapTime);
+      (window as any).__plan = `${stints} stints × ${lapsPerStint} laps (last ${lastStint})`;
+    }
+
+    ['per-lap', 'tank', 'race-laps', 'margin', 'lap-time'].forEach((id) => $(id).addEventListener('input', compute));
+    compute();
+  </script>
+</Base>

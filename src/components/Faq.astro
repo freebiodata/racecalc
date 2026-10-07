@@ -1,0 +1,26 @@
+---
+interface QA {
+  q: string;
+  a: string; // may contain simple HTML links
+}
+
+interface Props {
+  items: QA[];
+  title?: string;
+  id?: string;
+}
+
+const { items, title = 'Frequently asked questions', id = 'faq' } = Astro.props;
+---
+
+<section class="section" aria-labelledby={id}>
+  <h2 id={id}>{title}</h2>
+  <div class="faq">
+    {items.map((item) => (
+      <details>
+        <summary>{item.q}</summary>
+        <div class="faq-body"><p set:html={item.a} /></div>
+      </details>
+    ))}
+  </div>
+</section>

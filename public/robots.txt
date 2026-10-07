@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Internal search (none exists today; reserved)
+Disallow: /*?q=
+Disallow: /*?s=
+
+Sitemap: https://racecalc.top/sitemap-index.xml

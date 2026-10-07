@@ -1,0 +1,110 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import Faq from '../../../components/Faq.astro';
+import TrustBlock from '../../../components/TrustBlock.astro';
+import { site } from '../../../data/site';
+
+const title = 'Sim Racing FOV Explained: Why It Is a Measurement';
+const description =
+  'Why the correct sim racing FOV is a physical measurement, not a preference: the maths, how to verify your value on track, and common mistakes.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Guides', href: '/guides/' },
+  { name: 'FOV explained' },
+];
+
+const faq = [
+  {
+    q: 'Is a wider FOV really slower?',
+    a: 'A too-wide FOV compresses the image: braking markers look further away and lateral motion reads slower, which throws off your timing. The correct FOV removes the distortion; your speed sense then adapts within a few sessions.',
+  },
+  {
+    q: 'Can I use a slightly higher FOV for safety in traffic?',
+    a: 'Many drivers run the correct value plus 3-6 degrees to see a bit more of the sides. That is a reasonable trade; beyond about 10 degrees over, the centre distortion starts costing you braking accuracy more than the peripheral view gains.',
+  },
+  {
+    q: 'How do I verify my FOV without a calculator?',
+    a: 'On a straight, pick an object at the edge of your screen (a marshal post, a sign). With correct FOV, it should appear at the same relative position as it would through a window at that distance in reality; the classic check is comparing the apparent width of the track at a known distance to your real-world view.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  canonical="/guides/fov-explained/"
+  type="article"
+  jsonLd={[
+    {
+      '@type': 'Article',
+      headline: 'Sim Racing FOV Explained: Why It Is a Measurement',
+      datePublished: '2026-10-08',
+      dateModified: '2026-10-08',
+      author: { '@type': 'Organization', name: site.name, url: `${site.url}/about/` },
+    },
+  ]}
+>
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Sim racing FOV explained: why it is a measurement</h1>
+    <p class="lead">
+      FOV is not a taste setting like seat position. It is a physical relationship between your screen,
+      your eyes, and the track. Get it wrong and your brain fights the image all session.
+    </p>
+    <p class="small muted">Published 08 Oct 2026 · By the RaceCalc team</p>
+
+    <section class="section">
+      <h2 id="answer">Quick answer</h2>
+      <p>
+        Your screen is a window. The sim must project the world through that window at the same angle you
+        would see it for real: <code>hFOV = 2 × atan( screen width ÷ (2 × eye distance) )</code>.
+        Use the <a href="/fov-calculator/">FOV calculator</a> to get both axes for your exact setup,
+        then enter the value in the axis your sim expects.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="math">The maths in one paragraph</h2>
+      <p>
+        A screen of width W viewed from distance D spans an angle equal to the arctangent formula above.
+        Vertical FOV follows from the aspect ratio. That is the entire correct-FOV computation: measure
+        twice (width and distance), apply the formula, done. Everything else you read about "FOV
+        preference" is about how much deviation from this value you can tolerate.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="verify">Verifying on track</h2>
+      <ol class="steps">
+        <li><strong>Straight-line test.</strong> At speed on a straight, look at a fixed object near the screen edge (a post, sign, brake marker). With correct FOV its position relative to the bezel stays stable and predictable as you approach.</li>
+        <li><strong>Reference width test.</strong> On a known track width (pit lane at a reference track), the apparent width should match your calculations; if the track looks "stretched wide", your FOV is too low; "fish-eye narrow", too high.</li>
+        <li><strong>Braking-point test.</strong> Set a braking reference for one corner. If the marker arrives noticeably earlier or later than visual expectation after changing FOV, you have moved away from the correct value.</li>
+        <li><strong>Three-lap rule.</strong> Give any FOV change three laps of a favourite track before judging. Adaptation is fast when the geometry is right, slow when it is wrong.</li>
+      </ol>
+    </section>
+
+    <section class="section">
+      <h2 id="mistakes">Common mistakes</h2>
+      <ul>
+        <li><strong>Copying a pro's FOV number.</strong> It encodes their screen size and seating distance, not yours.</li>
+        <li><strong>Measuring to the wall, not the screen.</strong> Eye-to-screen-surface, every time.</li>
+        <li><strong>Ignoring aspect ratio.</strong> A 21:9 screen at the same size and distance has a wider horizontal FOV; solve both axes.</li>
+        <li><strong>Changing FOV and seat position together.</strong> Change one thing per session so you know what worked.</li>
+      </ul>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        Formulas and worked examples: <a href="/methodology/">methodology page</a>. This guide contains
+        no invented statistics; the verification tests are conventions from the sim racing community,
+        not measured studies.
+      </p>
+    </TrustBlock>
+  </div>
+</Base>

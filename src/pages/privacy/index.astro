@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { site } from '../../data/site';
+
+const title = 'Privacy Policy: No Trackers, No Uploads | RaceCalc';
+const description =
+  'RaceCalc privacy policy: all calculators run in your browser, we do not collect the values you enter, and tracking is kept to an absolute minimum.';
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'Privacy' },
+];
+---
+
+<Base title={title} description={description} breadcrumbs={breadcrumbs} canonical="/privacy/">
+  <div class="wrap-narrow">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <h1>Privacy policy</h1>
+    <p class="small muted">Effective date: 08 Oct 2026</p>
+
+    <section class="section">
+      <h2 id="summary">Plain-language summary</h2>
+      <ul>
+        <li>Every calculator runs <strong>entirely in your browser</strong>. The numbers you type are never transmitted to us.</li>
+        <li>We do not require accounts and do not store your settings.</li>
+        <li>We do not use third-party trackers on tool pages.</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2 id="what-we-collect">What we collect</h2>
+      <p><strong>Tool inputs:</strong> none. Calculations execute as client-side JavaScript; your screen measurements, FOV values and fuel numbers stay on your device.</p>
+      <p><strong>Contact emails:</strong> if you email us, we keep the message and your address to reply and to process any correction you report.</p>
+      <p><strong>Server logs:</strong> our static host may record standard request logs (IP address, user agent, requested URL) for security and operations.</p>
+    </section>
+
+    <section class="section">
+      <h2 id="cookies">Cookies &amp; analytics</h2>
+      <p>
+        Tool pages set no cookies for tracking. If we later adopt privacy-preserving, aggregate analytics,
+        they will be cookie-free by design and this section will describe them before deployment.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 id="third">Third parties</h2>
+      <p>None on tool pages: no ad networks, no social embeds, no cross-site trackers.</p>
+    </section>
+
+    <section class="section">
+      <h2 id="rights">Your rights &amp; contact</h2>
+      <p>
+        Contact <strong>{site.email}</strong> for any privacy question or deletion request regarding
+        emails you sent us. If you are in the EU/UK you have rights under GDPR; in California, under
+        CCPA/CPRA. We honour equivalent requests from anywhere.
+      </p>
+    </section>
+  </div>
+</Base>

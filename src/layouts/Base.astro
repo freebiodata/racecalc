@@ -1,0 +1,109 @@
+---
+import { site } from '../data/site';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+export interface BreadcrumbItem {
+  name: string;
+  href?: string;
+}
+
+interface Props {
+  title: string; // full <title> tag (already formatted with brand)
+  description: string; // meta description ≤ ~155 chars
+  canonical?: string; // path starting with /, defaults to Astro.url.pathname
+  type?: 'website' | 'article';
+  jsonLd?: object[]; // extra JSON-LD blocks (WebApplication etc.)
+  breadcrumbs?: BreadcrumbItem[];
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  type = 'website',
+  jsonLd = [],
+  breadcrumbs = [],
+  noindex = false,
+} = Astro.props;
+
+const path = canonical ?? Astro.url.pathname;
+const canonicalUrl = new URL(path, site.url).href;
+const ogImage = `${site.url}/og-default.png`;
+
+const orgJsonLd = {
+  '@type': 'Organization',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  url: `${site.url}/`,
+  logo: `${site.url}/logo-512.png`,
+  email: site.email,
+};
+
+const websiteJsonLd = {
+  '@type': 'WebSite',
+  '@id': `${site.url}/#website`,
+  name: site.name,
+  url: `${site.url}/`,
+  description: site.description,
+  publisher: { '@id': `${site.url}/#organization` },
+};
+
+const breadcrumbJsonLd =
+  breadcrumbs.length > 0
+    ? {
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumbs.map((b, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: b.name,
+          ...(b.href ? { item: new URL(b.href, site.url).href } : {}),
+        })),
+      }
+    : null;
+
+const allJsonLd = [orgJsonLd, websiteJsonLd, ...(breadcrumbJsonLd ? [breadcrumbJsonLd] : []), ...jsonLd];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#0b0e14" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" hreflang="en" href={canonicalUrl} />
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
+
+    <script type="application/ld+json" set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': allJsonLd })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

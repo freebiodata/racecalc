@@ -1,0 +1,302 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import Faq from '../../components/Faq.astro';
+import TrustBlock from '../../components/TrustBlock.astro';
+import { site } from '../../data/site';
+
+const title = 'Sim Racing FOV Calculator: iRacing, ACC, LMU | RaceCalc';
+const description =
+  'Calculate the correct FOV for your sim racing rig from screen size, resolution and viewing distance. Works with single, ultrawide and triple screens. Free.';
+
+const jsonLd = [
+  {
+    '@type': 'WebApplication',
+    '@id': `${site.url}/fov-calculator/#app`,
+    name: 'Sim Racing FOV Calculator',
+    url: `${site.url}/fov-calculator/`,
+    description:
+      'Calculate sim racing FOV from physical screen dimensions and eye distance; supports single, triple and ultrawide setups.',
+    applicationCategory: 'GameApplication',
+    operatingSystem: 'Any',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+];
+
+const breadcrumbs = [
+  { name: 'Home', href: '/' },
+  { name: 'All tools', href: '/tools/' },
+  { name: 'FOV calculator' },
+];
+
+const faq = [
+  {
+    q: 'What is the correct FOV for sim racing?',
+    a: 'The FOV that makes the screen window match the angle you would see through it in a real car: <code>hFOV = 2 × atan(screen width ÷ (2 × eye distance))</code>. For a 27" monitor (60 cm wide) at 60 cm viewing distance that is about 53°. Anything higher is a preference, not a correct value.',
+  },
+  {
+    q: 'Why does my FOV need to change when I move my seat or screens?',
+    a: 'FOV is a projection of your real geometry. Move the screens closer and they subtend a wider angle (higher FOV); move further away and it narrows. The calculator only needs your physical measurements, so it stays correct for any rig.',
+  },
+  {
+    q: 'Should I use vertical or horizontal FOV in my sim?',
+    a: 'It depends on the game: iRacing takes a vertical-angle style value, ACC and AC show a single "FOV" (horizontal in AC, configurable); rFactor 2 and LMU let you set either. The calculator gives you both numbers, plus a per-game note on which to enter.',
+  },
+  {
+    q: 'What about triple screens?',
+    a: 'Triples need two numbers: the per-screen FOV (same formula as a single screen) and the total rig FOV, which also depends on the angle of your side screens. The <a href="/triple-screen-calculator/">triple screen calculator</a> handles the full rig, including bezel gaps.',
+  },
+  {
+    q: 'Is a higher FOV better for lap times?',
+    a: 'No, and a too-high FOV hurts: it distorts the image, makes braking points harder to judge, and breaks the depth cues your brain expects. Most quick sim racers run FOV close to the mathematically correct value and adapt their sense of speed instead.',
+  },
+  {
+    q: 'Does this work for ultrawide monitors?',
+    a: 'Yes. Treat the ultrawide as a single screen using its physical width and enter your aspect ratio; the calculator solves both FOV axes. Note that the larger physical width at the same distance means a wider FOV than a 16:9 screen in the same spot.',
+  },
+];
+---
+
+<Base
+  title={title}
+  description={description}
+  jsonLd={jsonLd}
+  breadcrumbs={breadcrumbs}
+  canonical="/fov-calculator/"
+>
+  <div class="wrap">
+    <Breadcrumbs items={breadcrumbs} />
+
+    <div class="hero">
+      <h1>Sim Racing FOV Calculator</h1>
+      <p class="value-line">
+        Enter your screen size, resolution and eye distance to get the mathematically correct FOV for
+        your rig. Single screens, ultrawides and triples supported, with per-game notes for
+        iRacing, ACC, LMU, rFactor 2 and more.
+      </p>
+      <ul class="trust-microline">
+        <li class="badge badge-green">Runs in your browser</li>
+        <li class="badge">Free · No sign-up</li>
+        <li class="badge">Correct-geometry formula</li>
+      </ul>
+    </div>
+
+    <section class="tool" aria-labelledby="tool-heading">
+      <h2 id="tool-heading" class="visually-hidden">FOV calculator tool</h2>
+
+      <div class="tool-grid cols-2">
+        <div>
+          <div class="field">
+            <label for="setup">Screen setup</label>
+            <select id="setup">
+              <option value="single" selected>Single screen</option>
+              <option value="triple">Triple screens (same size)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="size">Screen size (diagonal, inches)</label>
+            <input type="number" id="size" inputmode="decimal" min="10" max="120" step="0.1" value="27" />
+            <span class="helper">The marketing size of one monitor, e.g. 27" or 34".</span>
+            <span class="error" role="alert">Enter a size between 10 and 120 inches.</span>
+          </div>
+
+          <div class="field">
+            <label for="aspect">Aspect ratio</label>
+            <select id="aspect">
+              <option value="16:9" selected>16:9 (2560×1440, 1920×1080)</option>
+              <option value="21:9">21:9 (3440×1440)</option>
+              <option value="32:9">32:9 (5120×1440)</option>
+              <option value="16:10">16:10 (1920×1200)</option>
+              <option value="4:3">4:3</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="distance">Eye to screen distance</label>
+            <input type="number" id="distance" inputmode="decimal" min="20" max="300" step="0.5" value="60" />
+            <span class="helper">Measure from your eyes to the screen surface, not to the bezel edge.</span>
+            <span class="error" role="alert">Enter a distance between 20 and 300.</span>
+          </div>
+
+          <div class="field">
+            <label for="unit">Distance unit</label>
+            <select id="unit">
+              <option value="cm" selected>centimetres</option>
+              <option value="in">inches</option>
+            </select>
+          </div>
+
+          <div class="field" id="bezel-field" hidden>
+            <label for="bezel">Bezel gap between screens (mm)</label>
+            <input type="number" id="bezel" inputmode="decimal" min="0" max="50" step="1" value="10" />
+            <span class="helper">Measure the visible gap between two screens (both edges together).</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="result-panel" style="margin-top:0;min-height:230px">
+            <div class="small muted">Your in-game FOV</div>
+            <div class="result-value" id="result-h">-</div>
+            <div class="result-meta">
+              <div class="kv"><div class="k">Vertical FOV</div><div class="v" id="out-v">-</div></div>
+              <div class="kv"><div class="k">Horizontal FOV</div><div class="v" id="out-h">-</div></div>
+              <div class="kv"><div class="k">Screen physical size</div><div class="v" id="out-size">-</div></div>
+            </div>
+            <div class="result-actions">
+              <button class="btn btn-primary" type="button" id="copy-btn"><span class="normal-label">Copy FOV</span><span class="copied-label">✓ Copied</span></button>
+            </div>
+          </div>
+
+          <div class="callout" id="triple-note" hidden>
+            <div class="callout-title">Triple screen rig</div>
+            <p class="mb-0" id="triple-note-text"></p>
+          </div>
+        </div>
+      </div>
+
+      <p class="small muted" style="margin-top:12px">
+        Everything is calculated locally in your browser. Nothing you enter is uploaded.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="how">
+      <h2 id="how">How sim racing FOV is calculated</h2>
+      <p>
+        Your monitor is a window. For the sim to show what you would see through that window, the camera
+        angle must equal the angle the screen physically subtends:
+      </p>
+      <p><code>hFOV = 2 × atan( screen width ÷ (2 × eye distance) )</code></p>
+      <p>
+        The vertical FOV comes from the aspect ratio:
+        <code>vFOV = 2 × atan( tan(hFOV ÷ 2) ÷ aspect )</code>.
+        Screen width is derived from its diagonal and aspect ratio (Pythagoras).
+        These are the same formulas used across sim racing (and standard perspective projection in
+        computer graphics); we publish the exact equations on the <a href="/methodology/">methodology page</a>.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="pergame">
+      <h2 id="pergame">Where to enter the FOV, per game</h2>
+      <p class="small muted" style="margin-bottom:14px">Quick orientation: most sims use either a horizontal, vertical or single "FOV" value, and some hide it behind a slider range. Always enter the number shown by the calculator for the axis your game uses, and check our per-game notes below.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Sim</th><th>What the game calls it</th><th>Enter</th></tr></thead>
+          <tbody>
+            <tr><td>iRacing</td><td>FOV (vertical-angle style value in the graphics options / camera)</td><td>Use the value iRacing's own field accepts; check its calculator dialog or set via the in-sim FOV dialog</td></tr>
+            <tr><td>Assetto Corsa (AC)</td><td>FOV (horizontal degrees in most camera modes)</td><td>Horizontal FOV</td></tr>
+            <tr><td>Assetto Corsa Competizione (ACC)</td><td>FOV (single value, horizontal in the usual workflow)</td><td>Horizontal FOV</td></tr>
+            <tr><td>Le Mans Ultimate / rFactor 2</td><td>FOV, set per axis in the config</td><td>Match the axis your config reads; usually horizontal</td></tr>
+            <tr><td>Automobilista 2</td><td>FOV (vertical in the built-in calculator)</td><td>Vertical FOV</td></tr>
+            <tr><td>F1 23–25</td><td>FOV on a slider (-20 to +20 style scale)</td><td>The number must be mapped to the slider scale; check our guide</td></tr>
+            <tr><td>GT7</td><td>FOV slider (unitless)</td><td>Match visually to the horizontal value; exact mapping varies</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin-top:10px">
+        Sim UIs change between patches: if in doubt, put the calculator's value into the axis you can
+        find and verify by comparing a straight road's apparent width against the windshield frame.
+      </p>
+    </section>
+
+    <Faq items={faq} />
+
+    <TrustBlock>
+      <p class="mb-0">
+        <strong>Method:</strong> standard perspective projection, applied to your physical measurements.
+        Formulas and sources are documented on the <a href="/methodology/">methodology page</a>. Spotted an
+        error or a per-game quirk we missed? <a href="/contact/">Tell us</a>.
+      </p>
+    </TrustBlock>
+
+    <section class="section" aria-labelledby="related">
+      <h2 id="related">Related tools</h2>
+      <ul class="related-grid" style="list-style:none;padding:0">
+        <li><a class="tool-card" href="/triple-screen-calculator/"><span class="tc-title">Triple Screen Calculator</span><p class="tc-desc">Full rig FOV with side screen angles and bezel correction.</p></a></li>
+        <li><a class="tool-card" href="/ppd-calculator/"><span class="tc-title">PPD Calculator</span><p class="tc-desc">Pixels per degree for your displays and distance.</p></a></li>
+        <li><a class="tool-card" href="/fuel-calculator/"><span class="tc-title">Fuel &amp; Stint Calculator</span><p class="tc-desc">Plan fuel, stints and margins for race distance.</p></a></li>
+      </ul>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id: string) => document.getElementById(id)!;
+    const ASPECTS: Record<string, number> = {
+      '16:9': 16 / 9, '21:9': 21 / 9, '32:9': 32 / 9, '16:10': 16 / 10, '4:3': 4 / 3,
+    };
+    const rad = (d: number) => (d * Math.PI) / 180;
+    const deg = (r: number) => (r * 180) / Math.PI;
+
+    function compute() {
+      const setup = ($('setup') as HTMLSelectElement).value;
+      const sizeIn = parseFloat(($('size') as HTMLInputElement).value);
+      const aspect = ASPECTS[($('aspect') as HTMLSelectElement).value];
+      const dist = parseFloat(($('distance') as HTMLInputElement).value);
+      const unit = ($('unit') as HTMLSelectElement).value;
+
+      ($('bezel-field') as HTMLElement).hidden = setup !== 'triple';
+
+      const validSize = Number.isFinite(sizeIn) && sizeIn >= 10 && sizeIn <= 120;
+      const validDist = Number.isFinite(dist) && dist >= 20 && dist <= 300;
+      document.querySelectorAll('.field').forEach((f) => f.classList.remove('invalid'));
+      if (!validSize) ($('size') as HTMLInputElement).closest('.field')!.classList.add('invalid');
+      if (!validDist) ($('distance') as HTMLInputElement).closest('.field')!.classList.add('invalid');
+      if (!validSize || !validDist) {
+        $('result-h').textContent = '-';
+        return;
+      }
+
+      const distMu = unit === 'in' ? dist : dist / 2.54; // in inches
+      // diagonal -> width via Pythagoras: w = d * aspect / sqrt(aspect^2 + 1)
+      const widthIn = (sizeIn * aspect) / Math.sqrt(aspect * aspect + 1);
+      const heightIn = (sizeIn * 1) / Math.sqrt(aspect * aspect + 1);
+      const hFov = deg(2 * Math.atan(widthIn / (2 * distMu)));
+      const vFov = deg(2 * Math.atan(Math.tan(rad(hFov) / 2) / aspect));
+
+      $('result-h').textContent = `${hFov.toFixed(1)}°`;
+      $('out-v').textContent = `${vFov.toFixed(1)}°`;
+      $('out-h').textContent = `${hFov.toFixed(1)}°`;
+      $('out-size').textContent = `${(widthIn * 2.54).toFixed(1)} × ${(heightIn * 2.54).toFixed(1)} cm`;
+      (window as any).__fov = hFov.toFixed(1);
+
+      const note = $('triple-note');
+      if (setup === 'triple') {
+        const bezelMm = parseFloat(($('bezel') as HTMLInputElement).value) || 0;
+        const widthCm = widthIn * 2.54;
+        const bezelCm = (bezelMm / 10) * 2; // two bezel edges between the three screens
+        const totalWidthCm = widthCm * 3 + bezelCm;
+        const totalHFov = deg(2 * Math.atan(totalWidthCm / 2 / (unit === 'in' ? dist * 2.54 : dist)));
+        note.hidden = false;
+        $('triple-note-text').textContent =
+          `Flat-strip estimate: three ${sizeIn}" screens side by side with ${bezelMm} mm bezels total ${totalWidthCm.toFixed(1)} cm of width = ${totalHFov.toFixed(1)}° if placed flat. ` +
+          `Most rigs angle the side screens (typically 30–60°), which widens the effective FOV; use the Triple Screen Calculator for angled rigs.`;
+      } else {
+        note.hidden = true;
+      }
+    }
+
+    ['setup', 'size', 'aspect', 'distance', 'unit', 'bezel'].forEach((id) =>
+      $(id).addEventListener('input', compute),
+    );
+
+    $('copy-btn').addEventListener('click', async () => {
+      const v = (window as any).__fov;
+      if (!v || v === '-') return;
+      try {
+        await navigator.clipboard.writeText(v);
+      } catch {
+        const ta = document.createElement('textarea');
+        ta.value = v;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+      }
+      const btn = $('copy-btn');
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 1800);
+    });
+
+    compute();
+  </script>
+</Base>
